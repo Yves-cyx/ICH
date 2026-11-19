@@ -1,7 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ich_paper">#F5EFE3</color>
-    <color name="ich_ink">#25211E</color>
-    <color name="ich_red">#A83929</color>
-    <color name="ich_gold">#B68A50</color>
+    <color name="brand_primary">#992F28</color>
+    <color name="brand_on_primary">#FFFFFF</color>
+    <color name="brand_primary_container">#F5DFD2</color>
+    <color name="brand_on_primary_container">#57241D</color>
+    <color name="brand_surface">#FAF5EB</color>
+    <color name="brand_card">#FFFDF7</color>
+    <color name="brand_on_surface">#281A17</color>
+    <color name="brand_on_surface_variant">#685650</color>
+    <color name="brand_outline">#DECFC1</color>
+    <color name="legacy_navigation_bar">#201612</color>
+    <bool name="use_dark_system_bar_icons">true</bool>
 </resources>

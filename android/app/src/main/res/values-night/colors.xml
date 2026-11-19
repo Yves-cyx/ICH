@@ -1,0 +1,12 @@
+<resources>
+    <color name="brand_primary">#F2A797</color>
+    <color name="brand_on_primary">#4B1611</color>
+    <color name="brand_primary_container">#522722</color>
+    <color name="brand_on_primary_container">#FFDCD3</color>
+    <color name="brand_surface">#211714</color>
+    <color name="brand_card">#30221D</color>
+    <color name="brand_on_surface">#F6E8DF</color>
+    <color name="brand_on_surface_variant">#D8C0B4</color>
+    <color name="brand_outline">#48352E</color>
+    <bool name="use_dark_system_bar_icons">false</bool>
+</resources>

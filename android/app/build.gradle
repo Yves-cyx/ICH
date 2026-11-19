@@ -1,18 +1,49 @@
 plugins {
     id 'com.android.application'
 }
+
+def configuredApi = providers.gradleProperty('FEIYI_API_URL').orNull
+
 android {
-    namespace 'com.yves.ich'
-    compileSdk 36
+    namespace = 'com.yingjian.feiyi'
+    compileSdk = 34
+
     defaultConfig {
-        applicationId 'com.yves.ich'
-        minSdk 24
-        targetSdk 36
-        versionCode 1
-        versionName '0.1.0'
+        applicationId = 'com.yingjian.feiyi'
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 2
+        versionName = '1.0.0'
+        buildConfigField 'String', 'API_URL', "\"${configuredApi ?: 'https://127.0.0.1:8096/'}\""
     }
+
+    buildTypes {
+        debug {
+            buildConfigField 'String', 'API_URL', "\"${configuredApi ?: 'http://10.0.2.2:8096/'}\""
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
 }
