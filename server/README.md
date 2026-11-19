@@ -1,6 +1,6 @@
 # 后端工作区
 
-负责人：C（待认领）。当前没有服务端实现，不预设 Spring Boot / Node / Python。
+负责人：C 季院升。当前没有服务端实现，不预设 Spring Boot / Node / Python。
 
 首个 PR 需要交付：
 

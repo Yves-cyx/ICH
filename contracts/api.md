@@ -40,8 +40,8 @@
 
 ## Android 交接
 
-C 提供异步 CatalogRepository（list/get）、AuthRepository（register/login/logout/session）、FavoriteRepository（list/add/remove）。A 仅依赖这些接口，不直接写 HTTP。
-具体 Java 签名由 T03 同 A 确定后补到本文；约定成功/失败回调、主线程交付、取消请求和加载错误状态。假实现与远端实现遵守同一接口。
+C 提供异步 CatalogRepository（list/get）、AuthRepository（register/login/logout/session）、FavoriteRepository（list/add/remove）。A 的登录页、B 的图鉴/收藏/“我的”仅依赖这些接口，不直接写 HTTP。
+具体 Java 签名由 T03 同 A/B 确定后补到本文；约定成功/失败回调、主线程交付、取消请求和加载错误状态。假实现与远端实现遵守同一接口。
 
 ## 样例
 

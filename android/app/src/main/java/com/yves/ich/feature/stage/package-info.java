@@ -1,2 +1,2 @@
-/** B owns this package. See docs/分工.md before cross-module edits. */
+/** A / 陈翊轩 owns this package after framework handoff. See docs/分工.md. */
 package com.yves.ich.feature.stage;
