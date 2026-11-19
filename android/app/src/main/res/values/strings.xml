@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ICH 非遗</string>
+    <string name="brand">ICH · 见艺</string>
+    <string name="tab_catalog">非遗图鉴</string>
+    <string name="tab_experience">体验</string>
+    <string name="tab_profile">我的</string>
+    <string name="catalog_title">一览千年手艺</string>
+    <string name="catalog_intro">从一件影人、一纸剪花出发，走近非遗。\n图鉴与百科将在这里呈现。</string>
+    <string name="catalog_placeholder">开发中 · 图鉴列表、搜索与详情\n首轮先接入 3 条审校内容，之后扩展至 50 条。</string>
+    <string name="experience_title">让手艺动起来</string>
+    <string name="experience_intro">看一场影戏，转一件影人，描一笔纹样。</string>
+    <string name="stage_placeholder">01  皮影戏台\n待实现 · 拖动影人、翻转与预设动作</string>
+    <string name="viewer_placeholder">02  360° 展示\n待实现 · 拖动查看预渲染序列</string>
+    <string name="drawing_placeholder">03  临摹画布\n待实现 · 绘画、撤销与草稿保存</string>
+    <string name="profile_title">我的非遗足迹</string>
+    <string name="profile_intro">当前为访客。\n账号功能尚未接入。</string>
+    <string name="profile_placeholder">待实现 · 我的收藏\n待实现 · 我的作品\n待实现 · 账号与设置</string>
+</resources>

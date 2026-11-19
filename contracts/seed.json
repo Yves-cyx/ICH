@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": "shadow-puppetry",
+      "name": "皮影戏",
+      "category": "传统戏剧",
+      "region": "待审校",
+      "coverUrl": null,
+      "summary": "格式示例，非正式百科内容",
+      "description": "",
+      "features": "",
+      "background": "",
+      "sources": [],
+      "experiences": []
+    },
+    {
+      "id": "paper-cutting",
+      "name": "剪纸",
+      "category": "传统美术",
+      "region": "待审校",
+      "coverUrl": null,
+      "summary": "格式示例，非正式百科内容",
+      "description": "",
+      "features": "",
+      "background": "",
+      "sources": [],
+      "experiences": []
+    },
+    {
+      "id": "embroidery",
+      "name": "刺绣",
+      "category": "传统美术",
+      "region": "待审校",
+      "coverUrl": null,
+      "summary": "格式示例，非正式百科内容",
+      "description": "",
+      "features": "",
+      "background": "",
+      "sources": [],
+      "experiences": []
+    }
+  ],
+  "page": 1,
+  "size": 20,
+  "total": 3
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/ich_paper">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="@string/brand" android:textSize="18sp" android:textStyle="bold"
+        android:textColor="@color/ich_red" android:padding="24dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <include layout="@layout/catalog_page" />
+        <include layout="@layout/experience_page" />
+        <include layout="@layout/profile_page" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button android:id="@+id/tab_catalog" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:minHeight="56dp" android:layout_weight="1"
+            android:text="@string/tab_catalog" />
+        <Button android:id="@+id/tab_experience" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:minHeight="56dp" android:layout_weight="1"
+            android:text="@string/tab_experience" />
+        <Button android:id="@+id/tab_profile" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:minHeight="56dp" android:layout_weight="1"
+            android:text="@string/tab_profile" />
+    </LinearLayout>
+</LinearLayout>
