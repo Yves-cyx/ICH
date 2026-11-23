@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditText
+        android:id="@+id/login_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:autofillHints="username"
+        android:hint="@string/login_account"
+        android:imeOptions="actionNext"
+        android:inputType="text"
+        android:singleLine="true" />
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:autofillHints="password"
+        android:hint="@string/login_password"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:saveEnabled="false"
+        android:singleLine="true" />
+    <Button
+        android:id="@+id/login_submit"
+        style="@style/IchAction"
+        android:text="@string/login_submit" />
+    <ProgressBar
+        android:id="@+id/login_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone" />
+    <TextView
+        android:id="@+id/login_status"
+        style="@style/IchBody"
+        android:accessibilityLiveRegion="polite" />
+</merge>

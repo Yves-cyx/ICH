@@ -6,6 +6,24 @@
         android:orientation="vertical" android:padding="24dp">
         <TextView style="@style/IchHeading" android:text="@string/profile_title" />
         <TextView style="@style/IchBody" android:text="@string/profile_intro" />
-        <TextView style="@style/IchBody" android:text="@string/profile_placeholder" />
+        <Button
+            android:id="@+id/open_login"
+            style="@style/IchAction"
+            android:text="@string/login_title" />
+
+        <Button
+            android:id="@+id/open_favorites"
+            style="@style/IchAction"
+            android:text="@string/favorites_title" />
+
+        <Button
+            android:id="@+id/open_works"
+            style="@style/IchAction"
+            android:text="@string/works_title" />
+
+        <Button
+            android:id="@+id/open_settings"
+            style="@style/IchAction"
+            android:text="@string/settings_title" />
     </LinearLayout>
 </ScrollView>
