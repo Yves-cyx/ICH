@@ -6,6 +6,9 @@
         android:orientation="vertical" android:padding="24dp">
         <TextView style="@style/IchHeading" android:text="@string/catalog_title" />
         <TextView style="@style/IchBody" android:text="@string/catalog_intro" />
-        <TextView style="@style/IchBody" android:text="@string/catalog_placeholder" />
+        <Button
+            android:id="@+id/open_catalog_detail"
+            style="@style/IchAction"
+            android:text="@string/catalog_sample" />
     </LinearLayout>
 </ScrollView>

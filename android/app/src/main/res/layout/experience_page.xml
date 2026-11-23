@@ -6,8 +6,19 @@
         android:orientation="vertical" android:padding="24dp">
         <TextView style="@style/IchHeading" android:text="@string/experience_title" />
         <TextView style="@style/IchBody" android:text="@string/experience_intro" />
-        <TextView style="@style/IchBody" android:text="@string/stage_placeholder" />
-        <TextView style="@style/IchBody" android:text="@string/viewer_placeholder" />
-        <TextView style="@style/IchBody" android:text="@string/drawing_placeholder" />
+        <Button
+            android:id="@+id/open_stage"
+            style="@style/IchAction"
+            android:text="@string/stage_title" />
+
+        <Button
+            android:id="@+id/open_viewer"
+            style="@style/IchAction"
+            android:text="@string/viewer_title" />
+
+        <Button
+            android:id="@+id/open_drawing"
+            style="@style/IchAction"
+            android:text="@string/drawing_title" />
     </LinearLayout>
 </ScrollView>

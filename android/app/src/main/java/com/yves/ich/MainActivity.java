@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.yves.ich.navigation.AppNavigator;
+
 /** A owns the app shell. Each feature replaces its own included layout. */
 public class MainActivity extends Activity {
     private static final String TAB_KEY = "selected_tab";
@@ -27,7 +29,27 @@ public class MainActivity extends Activity {
             final int index = i;
             findViewById(tabs[i]).setOnClickListener(view -> selectTab(index));
         }
+        bindPageLinks();
         selectTab(state == null ? 0 : state.getInt(TAB_KEY, 0));
+    }
+
+    private void bindPageLinks() {
+        findViewById(R.id.open_catalog_detail).setOnClickListener(
+                view -> AppNavigator.openCatalogDetail(this, "shadow-puppetry"));
+        findViewById(R.id.open_stage).setOnClickListener(
+                view -> AppNavigator.openStage(this));
+        findViewById(R.id.open_viewer).setOnClickListener(
+                view -> AppNavigator.openViewer(this, "shadow-figure"));
+        findViewById(R.id.open_drawing).setOnClickListener(
+                view -> AppNavigator.openDrawing(this, "paper-cutting"));
+        findViewById(R.id.open_login).setOnClickListener(
+                view -> AppNavigator.openLogin(this));
+        findViewById(R.id.open_favorites).setOnClickListener(
+                view -> AppNavigator.openFavorites(this));
+        findViewById(R.id.open_works).setOnClickListener(
+                view -> AppNavigator.openWorks(this));
+        findViewById(R.id.open_settings).setOnClickListener(
+                view -> AppNavigator.openSettings(this));
     }
 
     private void selectTab(int index) {
