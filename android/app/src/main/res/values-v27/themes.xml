@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.Yingjian" parent="Theme.Yingjian.Base">
+        <item name="android:navigationBarColor">@color/brand_surface</item>
+        <item name="android:windowLightNavigationBar">@bool/use_dark_system_bar_icons</item>
+    </style>
+</resources>

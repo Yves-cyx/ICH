@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
-        style="@style/IchBody"
-        android:text="@string/catalog_detail_intro" />
-    <TextView
-        android:id="@+id/catalog_detail_argument"
-        style="@style/IchBody" />
-</merge>

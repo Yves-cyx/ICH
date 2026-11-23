@@ -1,0 +1,15 @@
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${SERVER_PORT:8096}
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/feiyi}
+    username: ${DB_USER:feiyi}
+    password: ${DB_PASSWORD}
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+app:
+  jwt-secret: ${JWT_SECRET}
