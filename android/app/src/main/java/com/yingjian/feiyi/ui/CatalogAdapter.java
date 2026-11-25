@@ -12,18 +12,26 @@ import com.yingjian.feiyi.databinding.ItemHeritageBinding;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-final class CatalogAdapter extends ListAdapter<Heritage, CatalogAdapter.Card> {
+final class CatalogAdapter extends ListAdapter<CatalogAdapter.Slot, CatalogAdapter.Card> {
+    record Slot(long key, Heritage entry) {}
+
+    private final CatalogCoverLoader covers;
     private final Consumer<Heritage> open;
 
-    CatalogAdapter(Consumer<Heritage> open) {
+    CatalogAdapter(CatalogCoverLoader covers, Consumer<Heritage> open) {
         super(new DiffUtil.ItemCallback<>() {
-            @Override public boolean areItemsTheSame(@NonNull Heritage a, @NonNull Heritage b) { return a.id == b.id; }
-            @Override public boolean areContentsTheSame(@NonNull Heritage a, @NonNull Heritage b) {
-                return Objects.equals(a.title, b.title) && Objects.equals(a.summary, b.summary)
+            @Override public boolean areItemsTheSame(@NonNull Slot a, @NonNull Slot b) { return a.key() == b.key(); }
+
+            @Override public boolean areContentsTheSame(@NonNull Slot first, @NonNull Slot second) {
+                Heritage a = first.entry();
+                Heritage b = second.entry();
+                if (a == null || b == null) return a == b;
+                return Objects.equals(a.title, b.title)
                         && Objects.equals(a.region, b.region) && Objects.equals(a.category, b.category)
-                        && Objects.equals(a.artKey, b.artKey);
+                        && Objects.equals(a.artKey, b.artKey) && Objects.equals(a.coverUrl, b.coverUrl);
             }
         });
+        this.covers = covers;
         this.open = open;
     }
 
@@ -32,12 +40,32 @@ final class CatalogAdapter extends ListAdapter<Heritage, CatalogAdapter.Card> {
     }
 
     @Override public void onBindViewHolder(@NonNull Card card, int position) {
-        Heritage item = getItem(position);
-        card.views.art.setArtwork(item.artKey);
+        Heritage item = getItem(position).entry();
+        covers.bind(card.views.cover, card.views.art, item);
+        var root = card.views.getRoot();
+        root.setOnClickListener(item == null ? null : view -> open.accept(item));
+        root.setClickable(item != null);
+        root.setFocusable(item != null);
+        if (item == null) {
+            card.views.title.setText(R.string.catalog_empty_slot);
+            card.views.meta.setText("");
+            return;
+        }
         card.views.title.setText(item.title);
-        card.views.meta.setText(card.itemView.getContext().getString(R.string.combined_label, item.category, item.region));
-        card.views.summary.setText(item.summary);
-        card.views.getRoot().setOnClickListener(view -> open.accept(item));
+        card.views.meta.setText(metaLabel(card.itemView, item));
+    }
+
+    @Override public void onViewRecycled(@NonNull Card card) {
+        card.views.cover.setTag(null);
+        super.onViewRecycled(card);
+    }
+
+    static String metaLabel(android.view.View view, Heritage item) {
+        String region = item.region == null ? "" : item.region.trim();
+        String category = item.category == null ? "" : item.category.trim();
+        if (region.isEmpty()) return category;
+        if (category.isEmpty()) return region;
+        return view.getContext().getString(R.string.combined_label, region, category);
     }
 
     static final class Card extends RecyclerView.ViewHolder {

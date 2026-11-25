@@ -34,6 +34,7 @@ public final class FeiyiViewModel extends AndroidViewModel {
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
     private String session;
+    private String favoriteAccount;
     private int generation;
     private int pending;
     private long openDetail;
@@ -42,6 +43,7 @@ public final class FeiyiViewModel extends AndroidViewModel {
         super(app);
         repository = new Repository(app);
         session = repository.session();
+        favoriteAccount = repository.localFavoriteAccount(session);
         signedIn.setValue(!session.isEmpty());
     }
 
@@ -54,6 +56,7 @@ public final class FeiyiViewModel extends AndroidViewModel {
         }
         execute(() -> repository.authenticate(username, password, register), token -> {
             session = token;
+            favoriteAccount = repository.localFavoriteAccount(token);
             signedIn.setValue(true);
         }, error -> authError.setValue(explain(error)));
     }
@@ -61,6 +64,7 @@ public final class FeiyiViewModel extends AndroidViewModel {
     void logout() {
         generation++;
         session = "";
+        favoriteAccount = "";
         repository.signOut();
         profile.setValue(null);
         works.setValue(Collections.emptyList());
@@ -91,11 +95,20 @@ public final class FeiyiViewModel extends AndroidViewModel {
         int requestGeneration = generation;
         execute(() -> {
             Heritage cached = repository.cachedDetail(id);
-            if (cached != null) main.post(() -> publishDetail(requestGeneration, id, cached));
-            return repository.detail(id);
+            return cached != null ? cached : repository.detail(id);
         }, entry -> publishDetail(requestGeneration, id, entry), error -> {
-            if (openDetail == id && detail.getValue() == null) detailNote.setValue(explain(error));
+            if (openDetail == id) detailNote.setValue(explain(error));
         });
+    }
+
+    boolean canSaveLocalFavorite() { return !favoriteAccount.isEmpty(); }
+
+    boolean isFavorite(long id) { return repository.isLocalFavorite(favoriteAccount, id); }
+
+    boolean toggleFavorite(long id) {
+        boolean selected = !isFavorite(id);
+        repository.setLocalFavorite(favoriteAccount, id, selected);
+        return selected;
     }
 
     private void publishDetail(int requestGeneration, long id, Heritage entry) {

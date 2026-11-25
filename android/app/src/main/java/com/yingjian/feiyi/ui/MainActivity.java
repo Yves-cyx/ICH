@@ -3,7 +3,11 @@ package com.yingjian.feiyi.ui;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
@@ -23,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class MainActivity extends AppCompatActivity {
+    private static final int CATALOG_SLOTS = 50;
     private enum Experience { STAGE, GALLERY, CREATE }
 
     private ActivityMainBinding shell;
@@ -33,13 +38,15 @@ public final class MainActivity extends AppCompatActivity {
     private PageProfileBinding profile;
     private PageDetailBinding detail;
     private CatalogAdapter catalogCards;
+    private CatalogCoverLoader catalogCovers;
     private WorksAdapter workCards;
     private boolean registering;
     private boolean lit;
     private boolean updatingStage;
     private boolean catalogRequested;
     private int tab = R.id.tab_discover;
-    private int filter = R.id.filter_all;
+    private String catalogQuery = "";
+    private Parcelable catalogPosition;
     private long detailId;
     private Experience experience = Experience.STAGE;
     private final Work galleryFigure = new Work();
@@ -49,9 +56,11 @@ public final class MainActivity extends AppCompatActivity {
         shell = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(shell.getRoot());
         model = new ViewModelProvider(this).get(FeiyiViewModel.class);
+        catalogCovers = CatalogCoverLoader.get(this);
         if (savedState != null) {
             tab = savedState.getInt("tab", R.id.tab_discover);
-            filter = savedState.getInt("filter", R.id.filter_all);
+            catalogQuery = savedState.getString("catalogQuery", "");
+            catalogPosition = savedState.getParcelable("catalogPosition");
             detailId = savedState.getLong("detail");
             registering = savedState.getBoolean("register");
             lit = savedState.getBoolean("lit");
@@ -95,6 +104,8 @@ public final class MainActivity extends AppCompatActivity {
                 detailId = 0;
                 tab = R.id.tab_discover;
                 showAuth();
+                catalogQuery = "";
+                catalogPosition = null;
                 return;
             }
             if (detailId != 0) showDetail(detailId);
@@ -179,23 +190,36 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private void showDiscover() {
+        visible(shell.toolbar, false);
         discover = PageDiscoverBinding.inflate(getLayoutInflater(), shell.content, false);
-        Work featured = new Work();
-        featured.name = "host";
-        featured.x = .36f;
-        discover.hero.showWork(featured, true, false);
-        discover.featured.setOnClickListener(view -> showDetail(1));
-        catalogCards = new CatalogAdapter(entry -> showDetail(entry.id));
+        catalogCards = new CatalogAdapter(catalogCovers, entry -> {
+            hideKeyboard();
+            showDetail(entry.id);
+        });
         int spans = getResources().getConfiguration().screenWidthDp >= 600 ? 3 : 2;
         discover.items.setLayoutManager(new GridLayoutManager(this, spans));
         discover.items.setAdapter(catalogCards);
-        discover.filters.check(filter);
-        discover.filters.setOnCheckedStateChangeListener((group, checked) -> {
-            if (!checked.isEmpty()) filter = checked.get(0);
-            renderCatalog();
+        discover.searchQuery.setText(catalogQuery);
+        discover.searchQuery.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence text, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence text, int start, int before, int count) {
+                catalogQuery = text.toString();
+                catalogPosition = null;
+                discover.items.scrollToPosition(0);
+                renderCatalog();
+            }
+            @Override public void afterTextChanged(Editable text) {}
         });
+        discover.searchQuery.setOnEditorActionListener((view, action, event) -> {
+            if (action != EditorInfo.IME_ACTION_SEARCH) return false;
+            hideKeyboard();
+            discover.getRoot().requestFocus();
+            return true;
+        });
+        discover.clearSearch.setOnClickListener(view -> discover.searchQuery.setText(""));
         discover.retry.setOnClickListener(view -> model.loadCatalog());
         replace(discover.getRoot(), true);
+        discover.getRoot().requestFocus();
         renderCatalog();
         if (!catalogRequested) {
             catalogRequested = true;
@@ -205,48 +229,96 @@ public final class MainActivity extends AppCompatActivity {
 
     private void renderCatalog() {
         if (discover == null) return;
-        String wanted = filter == R.id.filter_show ? "表演" : filter == R.id.filter_craft ? "工艺"
-                : filter == R.id.filter_music ? "音乐" : "";
-        List<Heritage> visible = new ArrayList<>();
-        for (Heritage entry : model.catalog.getValue()) {
-            if (wanted.isEmpty() || wanted.equals(entry.category)) visible.add(entry);
-        }
-        catalogCards.submitList(visible);
+        boolean searching = !CatalogSearch.normalize(catalogQuery).isEmpty();
+        List<Heritage> matches = CatalogSearch.match(model.catalog.getValue(), catalogQuery);
         String note = model.catalogNote.getValue();
-        if (note == null && visible.isEmpty() && !model.catalog.getValue().isEmpty()) note = "这个分类暂时没有内容";
-        showText(discover.message, note);
-        visible(discover.retry, model.catalogNote.getValue() != null);
+        boolean catalogReady = !model.catalog.getValue().isEmpty() || note != null;
+        List<CatalogAdapter.Slot> cards = new ArrayList<>();
+        for (Heritage entry : matches) cards.add(new CatalogAdapter.Slot(entry.id, entry));
+        if (!searching && catalogReady) {
+            for (int slot = cards.size(); slot < CATALOG_SLOTS; slot++) {
+                cards.add(new CatalogAdapter.Slot(-1L - slot, null));
+            }
+        }
+        boolean firstContent = !matches.isEmpty()
+                && catalogCards.getCurrentList().stream().noneMatch(card -> card.entry() != null);
+        PageDiscoverBinding page = discover;
+        catalogCards.submitList(cards, () -> {
+            if (discover != page) return;
+            if (catalogPosition != null && !matches.isEmpty()) {
+                page.items.getLayoutManager().onRestoreInstanceState(catalogPosition);
+                catalogPosition = null;
+            } else if (firstContent) {
+                page.items.scrollToPosition(0);
+            }
+        });
+        page.count.setText(getString(searching ? R.string.catalog_search_count : R.string.catalog_count, matches.size()));
+        visible(page.clearSearch, !catalogQuery.isEmpty());
+        if (searching && matches.isEmpty() && !model.catalog.getValue().isEmpty()) {
+            note = getString(R.string.catalog_empty_search);
+        }
+        showText(page.message, note);
+        visible(page.retry, model.catalogNote.getValue() != null);
     }
 
     private void showDetail(long id) {
         clearPage();
         detailId = id;
-        visible(shell.toolbar, true);
+        visible(shell.toolbar, false);
         visible(shell.navigation, false);
-        shell.toolbar.setTitle(R.string.view_story);
-        shell.toolbar.setNavigationIcon(R.drawable.ic_back);
-        shell.toolbar.setNavigationContentDescription(R.string.back);
-        shell.toolbar.setNavigationOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
         detail = PageDetailBinding.inflate(getLayoutInflater(), shell.content, false);
+        detail.detailBack.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
+        detail.favorite.setOnClickListener(view -> {
+            if (!model.canSaveLocalFavorite()) {
+                Snackbar.make(detail.getRoot(), R.string.catalog_favorite_error, Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            boolean selected = model.toggleFavorite(id);
+            renderFavorite(selected);
+            Snackbar.make(detail.getRoot(), selected ? R.string.catalog_saved_on_device
+                    : R.string.catalog_removed_on_device, Snackbar.LENGTH_SHORT).show();
+        });
         detail.retry.setOnClickListener(view -> model.openHeritage(id));
         replace(detail.getRoot(), true);
         model.openHeritage(id);
+        renderDetail();
     }
 
     private void renderDetail() {
         if (detail == null) return;
         Heritage entry = model.detail.getValue();
         String note = model.detailNote.getValue();
-        if (entry != null) {
-            detail.art.setArtwork(entry.artKey);
-            detail.meta.setText(getString(R.string.combined_label, entry.category, entry.region));
+        boolean ready = entry != null && entry.id == detailId;
+        visible(detail.coverFrame, ready);
+        visible(detail.introHeading, ready);
+        visible(detail.title, ready);
+        detail.favorite.setVisibility(ready ? View.VISIBLE : View.INVISIBLE);
+        if (ready) {
+            catalogCovers.bind(detail.cover, detail.art, entry);
+            showText(detail.meta, CatalogAdapter.metaLabel(detail.getRoot(), entry));
             detail.title.setText(entry.title);
-            detail.summary.setText(entry.summary);
-            detail.body.setText(entry.description);
+            String body = entry.description;
+            detail.body.setText(CatalogSearch.normalize(body).isEmpty()
+                    ? getString(R.string.catalog_detail_missing) : body);
+            renderFavorite(model.isFavorite(detailId));
         } else {
-            detail.body.setText(note == null ? "正在读取介绍…" : note);
+            visible(detail.meta, false);
+            detail.body.setText(note == null ? getString(R.string.catalog_detail_loading) : note);
         }
         visible(detail.retry, note != null);
+    }
+
+    private void renderFavorite(boolean selected) {
+        var button = detail.favorite;
+        button.setSelected(selected);
+        button.setText(selected ? R.string.catalog_favorited : R.string.catalog_favorite);
+        button.setContentDescription(getString(selected ? R.string.catalog_unfavorite : R.string.catalog_favorite));
+        button.setIconResource(selected ? R.drawable.ic_catalog_bookmark_filled : R.drawable.ic_catalog_bookmark);
+        int tint = MaterialColors.getColor(button, selected
+                ? com.google.android.material.R.attr.colorPrimary
+                : com.google.android.material.R.attr.colorOnSurface);
+        button.setTextColor(tint);
+        button.setIconTint(ColorStateList.valueOf(tint));
     }
 
     private void showExperience() {
@@ -423,11 +495,18 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private void clearPage() {
+        rememberCatalogPosition();
         auth = null;
         discover = null;
         stage = null;
         profile = null;
         detail = null;
+    }
+
+    private void rememberCatalogPosition() {
+        if (discover != null && discover.items.getLayoutManager() != null) {
+            catalogPosition = discover.items.getLayoutManager().onSaveInstanceState();
+        }
     }
 
     private void replace(View view, boolean animate) {
@@ -454,8 +533,10 @@ public final class MainActivity extends AppCompatActivity {
     private String value(TextView field) { return field.getText() == null ? "" : field.getText().toString(); }
 
     @Override protected void onSaveInstanceState(Bundle out) {
+        rememberCatalogPosition();
         out.putInt("tab", tab);
-        out.putInt("filter", filter);
+        out.putString("catalogQuery", catalogQuery);
+        out.putParcelable("catalogPosition", catalogPosition);
         out.putLong("detail", detailId);
         out.putBoolean("register", registering);
         out.putBoolean("lit", lit);

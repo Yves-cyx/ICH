@@ -32,6 +32,7 @@ public final class Models {
         public String summary;
         public String description;
         public String artKey;
+        public String coverUrl;
     }
 
     public static class Profile {

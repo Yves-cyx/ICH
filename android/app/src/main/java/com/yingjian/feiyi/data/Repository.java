@@ -1,11 +1,15 @@
 package com.yingjian.feiyi.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Base64;
 import androidx.room.Room;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.yingjian.feiyi.BuildConfig;
 import com.yingjian.feiyi.data.Models.*;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,10 +25,13 @@ public final class Repository implements AutoCloseable {
     private final HeritageDatabase cache;
     private final FeiyiApi api;
     private final Gson gson = new Gson();
+    private final SharedPreferences favorites;
 
     public Repository(Context context) {
         sessions = new SessionStore(context);
-        cache = Room.databaseBuilder(context, HeritageDatabase.class, "heritage.db").build();
+        favorites = context.getSharedPreferences("catalog_favorites", Context.MODE_PRIVATE);
+        cache = Room.databaseBuilder(context, HeritageDatabase.class, "heritage.db")
+                .addMigrations(HeritageDatabase.ADD_COVER_URL).build();
         OkHttpClient http = new OkHttpClient.Builder().callTimeout(10, TimeUnit.SECONDS).build();
         api = new Retrofit.Builder().baseUrl(BuildConfig.API_URL).client(http)
                 .addConverterFactory(GsonConverterFactory.create(gson)).build().create(FeiyiApi.class);
@@ -54,7 +61,37 @@ public final class Repository implements AutoCloseable {
     }
 
     public Heritage cachedDetail(long id) { return cache.catalog().detail(id); }
-    public Heritage detail(long id) throws IOException { return require(api.detail(id)); }
+    public Heritage detail(long id) throws IOException {
+        Heritage entry = require(api.detail(id));
+        cache.catalog().writeDetail(entry);
+        return entry;
+    }
+
+    public String localFavoriteAccount(String token) {
+        // The subject only namespaces device-local preferences, never authorizes a request.
+        try {
+            String[] jwt = token.split("\\.", -1);
+            if (jwt.length != 3) return "";
+            byte[] payload = Base64.decode(jwt[1], Base64.URL_SAFE | Base64.NO_WRAP);
+            JsonObject claims = gson.fromJson(new String(payload, StandardCharsets.UTF_8), JsonObject.class);
+            String subject = claims.get("sub").getAsString();
+            return Long.parseLong(subject) > 0 ? BuildConfig.API_URL + "#" + subject : "";
+        } catch (RuntimeException invalidToken) {
+            return "";
+        }
+    }
+
+    public boolean isLocalFavorite(String account, long id) {
+        return !account.isEmpty() && favorites.getBoolean(account + "/" + id, false);
+    }
+
+    public void setLocalFavorite(String account, long id, boolean selected) {
+        String key = account + "/" + id;
+        SharedPreferences.Editor editor = favorites.edit();
+        if (selected) editor.putBoolean(key, true);
+        else editor.remove(key);
+        editor.apply();
+    }
     public Profile profile(String token) throws IOException { return require(api.profile(bearer(token))); }
     public Profile saveProfile(String token, Profile input) throws IOException { return require(api.saveProfile(bearer(token), input)); }
     public List<Work> works(String token) throws IOException { return require(api.works(bearer(token))); }
