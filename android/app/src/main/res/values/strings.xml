@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">影间非遗</string>
-    <string name="discover">非遗推荐</string>
+    <string name="app_name">遗境智游</string>
+    <string name="discover">图鉴</string>
     <string name="experience">体验皮影</string>
+    <string name="tab_experience">体验</string>
     <string name="profile">我的</string>
-    <string name="welcome">影间非遗</string>
+    <string name="welcome">遗境智游</string>
     <string name="welcome_copy">从一方戏台，认识中国非遗。</string>
     <string name="username">账号</string>
     <string name="password">密码</string>
@@ -58,4 +59,21 @@
     <string name="edit_work">编辑作品</string>
     <string name="combined_label">%1$s · %2$s</string>
     <string name="account_label">\@%1$s</string>
+    <string name="catalog_heading">非遗图鉴</string>
+    <string name="catalog_search_hint">搜索非遗名称、地区或简介</string>
+    <string name="catalog_clear_search">清空搜索</string>
+    <string name="catalog_count">全部 %1$d 项</string>
+    <string name="catalog_search_count">找到 %1$d 项</string>
+    <string name="catalog_empty_search">未找到相关非遗</string>
+    <string name="catalog_empty_slot">内容待补充</string>
+    <string name="catalog_detail_title">非遗详情</string>
+    <string name="catalog_intro">非遗介绍</string>
+    <string name="catalog_detail_loading">正在读取介绍…</string>
+    <string name="catalog_detail_missing">介绍待补充</string>
+    <string name="catalog_favorite">收藏</string>
+    <string name="catalog_favorited">已收藏</string>
+    <string name="catalog_unfavorite">取消收藏</string>
+    <string name="catalog_saved_on_device">已收藏到本机</string>
+    <string name="catalog_removed_on_device">已取消收藏</string>
+    <string name="catalog_favorite_error">暂时无法保存收藏，请重试</string>
 </resources>

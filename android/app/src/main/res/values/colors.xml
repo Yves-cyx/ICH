@@ -9,5 +9,9 @@
     <color name="brand_on_surface_variant">#685650</color>
     <color name="brand_outline">#DECFC1</color>
     <color name="legacy_navigation_bar">#201612</color>
+    <color name="catalog_paper">#F8F6F1</color>
+    <color name="catalog_card">#FFFDF9</color>
+    <color name="catalog_search_surface">#EEE9E2</color>
+    <dimen name="catalog_detail_cover">328dp</dimen>
     <bool name="use_dark_system_bar_icons">true</bool>
 </resources>

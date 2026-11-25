@@ -8,5 +8,8 @@
     <color name="brand_on_surface">#F6E8DF</color>
     <color name="brand_on_surface_variant">#D8C0B4</color>
     <color name="brand_outline">#48352E</color>
+    <color name="catalog_paper">#211A17</color>
+    <color name="catalog_card">#2D231E</color>
+    <color name="catalog_search_surface">#382C27</color>
     <bool name="use_dark_system_bar_icons">false</bool>
 </resources>
