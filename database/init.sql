@@ -19,6 +19,16 @@ CREATE TABLE IF NOT EXISTS heritage (
   art_key VARCHAR(24) NOT NULL
 );
 
+-- 同一账号只能收藏同一条目一次，记录时间用于列表排序。
+CREATE TABLE IF NOT EXISTS heritage_favorite (
+  member_id BIGINT NOT NULL,
+  heritage_id BIGINT NOT NULL,
+  created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (member_id, heritage_id),
+  FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+  FOREIGN KEY (heritage_id) REFERENCES heritage(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS puppet_work (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   owner_id BIGINT NOT NULL,

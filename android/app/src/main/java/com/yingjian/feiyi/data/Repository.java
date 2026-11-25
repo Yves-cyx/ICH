@@ -51,13 +51,30 @@ public final class Repository implements AutoCloseable {
     public List<Heritage> cachedCatalog() { return cache.catalog().read(); }
 
     public List<Heritage> refreshCatalog() throws IOException {
-        List<Heritage> entries = require(api.catalog());
+        List<Heritage> entries = require(api.catalog(null, null, null, null));
         // 更新整个公共目录，读者不会看到被清空的中间态。
         cache.runInTransaction(() -> {
             cache.catalog().clear();
             cache.catalog().write(entries);
         });
         return entries;
+    }
+
+    public HeritagePage searchCatalog(String keyword, String category, Integer page, Integer size) throws IOException {
+        // 搜索只返回匹配结果，避免用筛选后的列表覆盖整个离线目录。
+        return readPage(api.catalog(keyword, category, page, size));
+    }
+
+    public HeritagePage listFavorites(String token, Integer page, Integer size) throws IOException {
+        return readPage(api.favorites(bearer(token), page, size));
+    }
+
+    public void addFavorite(String token, long heritageId) throws IOException {
+        require(api.addFavorite(bearer(token), heritageId));
+    }
+
+    public void removeFavorite(String token, long heritageId) throws IOException {
+        require(api.removeFavorite(bearer(token), heritageId));
     }
 
     public Heritage cachedDetail(long id) { return cache.catalog().detail(id); }
@@ -102,8 +119,18 @@ public final class Repository implements AutoCloseable {
 
     private String bearer(String token) { return "Bearer " + token; }
 
+    private HeritagePage readPage(Call<Envelope<List<Heritage>>> call) throws IOException {
+        Response<Envelope<List<Heritage>>> response = call.execute();
+        List<Heritage> items = require(response);
+        String totalCount = response.headers().get("X-Total-Count");
+        return new HeritagePage(items, totalCount == null ? null : Long.valueOf(totalCount));
+    }
+
     private <T> T require(Call<Envelope<T>> call) throws IOException {
-        Response<Envelope<T>> response = call.execute();
+        return require(call.execute());
+    }
+
+    private <T> T require(Response<Envelope<T>> response) throws IOException {
         Envelope<T> body = response.body();
         if (response.isSuccessful() && body != null && body.code == 0) return body.data;
         String message = "请求失败，请稍后再试";

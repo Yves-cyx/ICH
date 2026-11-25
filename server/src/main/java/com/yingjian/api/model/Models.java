@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 public final class Models {
     private Models() {}
@@ -62,6 +63,8 @@ public final class Models {
     }
 
     public record Token(String token) {}
+
+    public record HeritagePage(List<Heritage> items, Long totalCount) {}
 
     public record WorkCard(Long id, String name, String shape, String palette,
                            BigDecimal x, BigDecimal y, BigDecimal angle) {

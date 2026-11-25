@@ -7,12 +7,14 @@
 1. 阅读 [项目方案](项目.md)，确认首版范围。
 2. 阅读 [三人分工](docs/分工.md)，了解 A / B / C 的修改边界。
 3. 按 [影间非遗运行指南](docs/影间非遗运行指南.md) 初始化数据库、启动服务和运行 Android 应用。
-4. 按 [协作流程](CONTRIBUTING.md) 开分支、提 PR、合并交接。
+4. 查看 [功能清单](docs/功能清单.md) 和 [统一接口文档](docs/接口文档.md)，了解完成状态和联调方式。
+5. 按 [协作流程](CONTRIBUTING.md) 开分支、提 PR、合并交接。
 
 ## 当前状态
 
 - Android 客户端提供账号注册和登录、非遗目录与详情、皮影戏台和展馆、皮影设计和个人作品管理。
-- 后端使用 Spring Boot 和 MySQL。当前接口见 [OpenAPI](docs/openapi.json)，`contracts/` 保留团队早期接口草案和示例数据。
+- 后端使用 Spring Boot 和 MySQL，已支持图鉴搜索、分页和账号收藏。已有数据库可重跑 [初始化脚本](database/init.sql) 创建收藏表。
+- 当前可调用接口见 [OpenAPI 快照](docs/openapi.json)，开发和联调使用 [统一 OpenAPI](docs/openapi-contract.json)。`contracts/` 保留团队早期接口草案和示例数据。
 
 ## 仓库结构
 

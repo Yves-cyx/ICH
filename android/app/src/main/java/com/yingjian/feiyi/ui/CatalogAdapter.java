@@ -25,7 +25,7 @@ final class CatalogAdapter extends ListAdapter<CatalogAdapter.Slot, CatalogAdapt
             @Override public boolean areContentsTheSame(@NonNull Slot first, @NonNull Slot second) {
                 Heritage a = first.entry();
                 Heritage b = second.entry();
-                if (a == null || b == null) return a == b;
+                if (a == null || b == null) return Objects.equals(a, b);
                 return Objects.equals(a.title, b.title)
                         && Objects.equals(a.region, b.region) && Objects.equals(a.category, b.category)
                         && Objects.equals(a.artKey, b.artKey) && Objects.equals(a.coverUrl, b.coverUrl);

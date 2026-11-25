@@ -148,6 +148,78 @@
         ]
       }
     },
+    "/api/me/favorites/{heritageId}": {
+      "put": {
+        "tags": [
+          "favorite-controller"
+        ],
+        "summary": "收藏非遗条目",
+        "operationId": "addMyFavorite",
+        "parameters": [
+          {
+            "name": "heritageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvelopeVoid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "favorite-controller"
+        ],
+        "summary": "取消收藏",
+        "operationId": "removeMyFavorite",
+        "parameters": [
+          {
+            "name": "heritageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvelopeVoid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/works": {
       "get": {
         "tags": [
@@ -266,15 +338,120 @@
         }
       }
     },
+    "/api/me/favorites": {
+      "get": {
+        "tags": [
+          "favorite-controller"
+        ],
+        "summary": "查询当前账号的收藏",
+        "operationId": "listMyFavorites",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "headers": {
+              "X-Total-Count": {
+                "description": "启用分页时返回收藏总数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvelopeListHeritage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/heritage": {
       "get": {
         "tags": [
           "catalog-controller"
         ],
-        "operationId": "list_1",
+        "summary": "查询非遗目录，可按关键词、类别筛选和分页",
+        "operationId": "listHeritage",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "请求成功",
+            "headers": {
+              "X-Total-Count": {
+                "description": "启用分页时返回筛选后的总条数",
+                "style": "simple",
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
             "content": {
               "*/*": {
                 "schema": {
@@ -453,6 +630,19 @@
           }
         }
       },
+      "EnvelopeVoid": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {}
+        }
+      },
       "Credentials": {
         "type": "object",
         "properties": {
@@ -571,19 +761,6 @@
           "data": {
             "$ref": "#/components/schemas/Heritage"
           }
-        }
-      },
-      "EnvelopeVoid": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {}
         }
       }
     },

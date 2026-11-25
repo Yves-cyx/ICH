@@ -2,6 +2,7 @@ package com.yingjian.feiyi.data;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.util.List;
 
 public final class Models {
     private Models() {}
@@ -33,6 +34,17 @@ public final class Models {
         public String description;
         public String artKey;
         public String coverUrl;
+    }
+
+    public static final class HeritagePage {
+        public final List<Heritage> items;
+        // 未传分页参数时，服务端不会返回总数响应头。
+        public final Long totalCount;
+
+        HeritagePage(List<Heritage> items, Long totalCount) {
+            this.items = items;
+            this.totalCount = totalCount;
+        }
     }
 
     public static class Profile {
